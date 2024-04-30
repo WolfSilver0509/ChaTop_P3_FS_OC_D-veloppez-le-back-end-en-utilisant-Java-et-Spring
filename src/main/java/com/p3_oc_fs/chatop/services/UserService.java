@@ -1,5 +1,6 @@
 package com.p3_oc_fs.chatop.services;
 
+import com.p3_oc_fs.chatop.dtos.UserGetMe;
 import com.p3_oc_fs.chatop.models.User;
 import com.p3_oc_fs.chatop.repositorys.UserRepository;
 import org.springframework.stereotype.Service;
@@ -22,11 +23,22 @@ public class UserService {
      * Récupère la liste de tous les utilisateurs.
      * @return La liste de tous les utilisateurs.
      */
-    public List<User> allUsers() {
-        List<User> users = new ArrayList<>();
+    public List<UserGetMe> allUsers() {
+        List<UserGetMe> UserGetMes = new ArrayList<>();
 
-        userRepository.findAll().forEach(users::add);
+        userRepository.findAll().forEach(user -> {
+            UserGetMe UserGetMe = new UserGetMe(user.getId(), user.getName(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
+            UserGetMes.add(UserGetMe);
+        });
 
-        return users;
+        return UserGetMes;
+    }
+
+    /**
+     * Récupère l'utilisateur courant.
+     * @return L'utilisateur courant.
+     */
+    public UserGetMe getCurrentUser(User user) {
+        return new UserGetMe(user.getId(), user.getName(), user.getEmail(), user.getCreatedAt(), user.getUpdatedAt());
     }
 }
