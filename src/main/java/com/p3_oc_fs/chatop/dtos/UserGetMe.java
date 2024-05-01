@@ -10,23 +10,23 @@ public class UserGetMe {
     private Integer id;
     private String name;
     private String email;
-    private Date createdAt;
-    private Date updatedAt;
+    private Date created_at;
+    private Date updated_at;
 
     /**
      * Constructeur de la classe UserGetMe.
      * @param id L'identifiant de l'utilisateur.
      * @param name Le nom de l'utilisateur.
      * @param email L'email de l'utilisateur.
-     * @param createdAt La date de création de l'utilisateur.
-     * @param updatedAt La date de mise à jour de l'utilisateur.
+     * @param created_at La date de création de l'utilisateur.
+     * @param updated_at La date de mise à jour de l'utilisateur.
      */
-    public UserGetMe(Integer id, String name, String email, Date createdAt, Date updatedAt) {
+    public UserGetMe(Integer id, String name, String email, Date created_at, Date updated_at) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
     }
 
     /**
@@ -57,16 +57,16 @@ public class UserGetMe {
      * Renvoie la date de création de l'utilisateur.
      * @return La date de création de l'utilisateur.
      */
-    public Date getCreatedAt() {
-        return createdAt;
+    public Date getcreated_at() {
+        return created_at;
     }
 
     /**
      * Renvoie la date de mise à jour de l'utilisateur.
      * @return La date de mise à jour de l'utilisateur.
      */
-    public Date getUpdatedAt() {
-        return updatedAt;
+    public Date getupdated_at() {
+        return updated_at;
     }
 }
 
