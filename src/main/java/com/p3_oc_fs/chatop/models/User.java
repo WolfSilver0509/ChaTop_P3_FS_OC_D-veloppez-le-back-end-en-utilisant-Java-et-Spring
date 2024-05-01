@@ -40,12 +40,14 @@ public class User implements UserDetails { // Définition de la classe User comm
     @CreationTimestamp
     /* Définition des propriétés de la colonne 'created_at' dans la base de données */
     @Column(updatable = false, name = "created_at")
+    @Temporal(TemporalType.DATE)
     private Date createdAt;
 
     /* Annotation pour mettre à jour automatiquement la date de modification */
     @UpdateTimestamp
     /* Définition des propriétés de la colonne 'updated_at' dans la base de données */
     @Column(name = "updated_at")
+    @Temporal(TemporalType.DATE)
     private Date updatedAt;
 
     /* Implémentation de la méthode pour obtenir les autorités de l'utilisateur */
