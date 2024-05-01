@@ -16,11 +16,12 @@ import java.util.Optional;
 public interface UserRepository extends CrudRepository<User, Integer> {
 
     /**
-     * Recherche un utilisateur par son adresse e-mail.
+     * Recherche un utilisateur par son adresse e-mail ou son id
      *
      * @param email L'adresse e-mail de l'utilisateur à rechercher.
      * @return Un objet `Optional<User>` contenant l'utilisateur trouvé
      *         ou un objet vide s'il n'est pas trouvé.
      */
     Optional<User> findByEmail(String email);
+    Optional<User> findById(Integer id);
 }
