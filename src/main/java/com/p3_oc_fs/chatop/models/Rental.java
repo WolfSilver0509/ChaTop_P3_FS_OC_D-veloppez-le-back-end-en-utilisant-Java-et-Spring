@@ -19,6 +19,7 @@ public class Rental {
 
     private String picture;
 
+    @Column(length = 2000)
     private String description;
 
     @ManyToOne
@@ -28,6 +29,30 @@ public class Rental {
     private Date created_at;
 
     private Date updated_at;
+
+    public Rental() {
+
+    }
+
+    public Rental(Integer id, String name, BigDecimal surface, BigDecimal price, String picture, String description, User owner, Date created_at, Date updated_at) {
+        this.id = id;
+        this.name = name;
+        this.surface = surface;
+        this.price = price;
+        this.picture = picture;
+        this.description = description;
+        this.owner = owner;
+        this.created_at = created_at;
+        this.updated_at = updated_at;
+    }
+
+    public Rental(String name, BigDecimal surface, BigDecimal price, String description, User owner) {
+        this.name = name;
+        this.surface = surface;
+        this.price = price;
+        this.description = description;
+        this.owner = owner;
+    }
 
     // Getters and Setters
 

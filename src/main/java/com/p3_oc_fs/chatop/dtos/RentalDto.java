@@ -1,44 +1,36 @@
 package com.p3_oc_fs.chatop.dtos;
 
-import java.math.BigDecimal;
+import com.p3_oc_fs.chatop.models.User;
+import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+@Getter@Setter
+@NoArgsConstructor @AllArgsConstructor
 public class RentalDto {
+
     private String name;
+
     private BigDecimal surface;
+
     private BigDecimal price;
+
     private String description;
 
-    // Getters and Setters
+    private MultipartFile picture;
 
-    public String getName() {
-        return name;
-    }
+    private Integer ownerId;
 
-    public void setName(String name) {
+
+    public RentalDto(BigDecimal price, String description, BigDecimal surface, String name) {
+        this.price = price;
+        this.description = description;
+        this.surface = surface;
         this.name = name;
     }
-
-    public BigDecimal getSurface() {
-        return surface;
-    }
-
-    public void setSurface(BigDecimal surface) {
-        this.surface = surface;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }
+
+
+
