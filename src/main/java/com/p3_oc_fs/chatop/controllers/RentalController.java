@@ -43,6 +43,21 @@ public class RentalController {
         return ResponseEntity.ok(rental);
     }
 
+    @GetMapping // Use GET for retrieving data
+    public ResponseEntity<List<Rental>> getAllRentals() {
+        List<Rental> rentals = rentalService.findAllRentals();
+        return ResponseEntity.ok(rentals);
+    }
+
+    @GetMapping("/{id}") // Use path variable for ID
+    public ResponseEntity<Rental> getRentalById(@PathVariable Integer id) {
+        Optional<Rental> rentalOptional = rentalService.findById(id);
+        if (rentalOptional.isPresent()) {
+            return ResponseEntity.ok(rentalOptional.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 
     @PostMapping
     public String test(@ModelAttribute RentalDto string, Model model) {
@@ -52,31 +67,3 @@ public class RentalController {
 }
 
 
-//@RestController
-//@RequestMapping("api/rentals")
-//public class RentalController {
-//    @Autowired
-//    private RentalService rentalService;
-//
-//    @Autowired
-//    private UserService userService;
-//
-////@PostMapping("/1")
-////public ResponseEntity<Rental> createRental(@RequestParam("picture") MultipartFile picture, @RequestBody RentalDto rentalDto, @RequestParam("ownerId") Integer ownerId) {
-////    Optional<User> ownerOptional = userService.findById(ownerId);
-////    if (ownerOptional.isPresent()) {
-////        User owner = ownerOptional.get();
-////        Rental rental = new Rental();
-////        rental.setName(rentalDto.getName());
-////        rental.setSurface(rentalDto.getSurface());
-////        rental.setPrice(rentalDto.getPrice());
-////        rental.setDescription(rentalDto.getDescription());
-////        rental.setOwner(owner);
-////        rentalService.saveRentalWithImage(rental, picture);
-////        return ResponseEntity.ok(rental);
-////    } else {
-////        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-////    }
-////}
-//
-//}

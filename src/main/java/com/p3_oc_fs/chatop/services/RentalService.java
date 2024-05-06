@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RentalService {
@@ -42,6 +44,14 @@ public class RentalService {
         } catch (IOException e) {
             throw new RuntimeException("Failed to store image", e);
         }
+    }
+
+    public List<Rental> findAllRentals() {
+        return rentalRepository.findAll();
+    }
+
+    public Optional<Rental> findById(Integer id) {
+        return rentalRepository.findById(id);
     }
 
 //    private String saveImage(MultipartFile image) {
