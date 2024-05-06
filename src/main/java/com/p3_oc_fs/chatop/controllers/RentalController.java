@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("api/rentals")
@@ -27,7 +30,7 @@ public class RentalController {
     private UserService userService;
 
     @PostMapping("/1")
-    public ResponseEntity<String> createRental(@RequestParam("picture") MultipartFile picture,
+    public ResponseEntity<Rental> createRental(@RequestParam("picture") MultipartFile picture,
                                                @ModelAttribute RentalDto rentalDto,
                                                Principal principal) {
         User currentUser = (User) ((Authentication) principal).getPrincipal();
@@ -40,14 +43,73 @@ public class RentalController {
         );
 
         rentalService.saveRentalWithImage(rental, picture);
-        return ResponseEntity.ok("Rental created successfully !");
+        return ResponseEntity.ok(rental);
     }
 
-    @GetMapping // Use GET for retrieving data
-    public ResponseEntity<List<Rental>> getAllRentals() {
+//    @GetMapping
+//    public ResponseEntity<List<Rental>> getAllRentals() {
+//        List<Rental> rentals = rentalService.findAllRentals();
+//        return ResponseEntity.ok(rentals);
+//    }
+
+    //    @GetMapping
+//    public ResponseEntity<List<RentalDto>> getAllRentals() {
+//        List<Rental> rentals = rentalService.findAllRentals();
+//
+//        // Convertir les locations en objets RentalDto
+//        List<RentalDto> rentalDtos = rentals.stream()
+//                .map(this::convertToRentalDto)
+//                .collect(Collectors.toList());
+//
+//        return ResponseEntity.ok(rentalDtos);
+//    }
+//
+//    // Méthode pour convertir un objet Rental en RentalDto
+//    private RentalDto convertToRentalDto(Rental rental) {
+//        return new RentalDto(
+//                rental.getId(),
+//                rental.getName(),
+//                rental.getSurface(),
+//                rental.getPrice(),
+//                rental.getDescription(),
+//                rental.getOwner_id().getId(),
+//                rental.getCreated_at(),
+//                rental.getUpdated_at()
+//
+//        );
+//    }
+    @GetMapping
+    public ResponseEntity<Map<String, List<RentalDto>>> getAllRentals() {
         List<Rental> rentals = rentalService.findAllRentals();
-        return ResponseEntity.ok(rentals);
+
+        // Convertir les locations en objets RentalDto
+        List<RentalDto> rentalDtos = rentals.stream()
+                .map(this::convertToRentalDto)
+                .collect(Collectors.toList());
+
+        // Créer un objet Map pour envelopper les locations dans la clé "rentals"
+        Map<String, List<RentalDto>> response = new HashMap<>();
+        response.put("rentals", rentalDtos);
+
+        return ResponseEntity.ok(response);
+
     }
+
+    // Méthode pour convertir un objet Rental en RentalDto
+    private RentalDto convertToRentalDto(Rental rental) {
+        return new RentalDto(
+                rental.getId(),
+                rental.getName(),
+                rental.getSurface(),
+                rental.getPrice(),
+                rental.getDescription(),
+                rental.getOwner_id().getId(),
+                rental.getCreated_at(),
+                rental.getUpdated_at()
+
+        );
+    }
+
 
     @GetMapping("/{id}") // Use path variable for ID
     public ResponseEntity<Rental> getRentalById(@PathVariable Integer id) {
@@ -64,51 +126,4 @@ public class RentalController {
         return string.toString();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateRental(@PathVariable Integer id,
-                                               @ModelAttribute RentalDto rentalDto,
-                                               Principal principal) {
-        Optional<Rental> existingRentalOptional = rentalService.findById(id);
-        if (existingRentalOptional.isPresent()) {
-            Rental existingRental = existingRentalOptional.get();
-            if (!existingRental.getOwner().getUsername().equals(principal.getName())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this rental.");
-            }
-
-            existingRental.setName(rentalDto.getName());
-            existingRental.setSurface(rentalDto.getSurface());
-            existingRental.setPrice(rentalDto.getPrice());
-            existingRental.setDescription(rentalDto.getDescription());
-
-            rentalService.saveRental(existingRental);
-
-            return ResponseEntity.ok("Rental updated successfully !");
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rental not found.");
-        }
-    }
-
-
-
-//    @PutMapping("/{id}")
-//    public ResponseEntity<Rental> updateRental(@PathVariable Integer id,
-//                                               @ModelAttribute RentalDto rentalDto) {
-//        Optional<Rental> existingRentalOptional = rentalService.findById(id);
-//        if (existingRentalOptional.isPresent()) {
-//            Rental existingRental = existingRentalOptional.get();
-//            existingRental.setName(rentalDto.getName());
-//            existingRental.setSurface(rentalDto.getSurface());
-//            existingRental.setPrice(rentalDto.getPrice());
-//            existingRental.setDescription(rentalDto.getDescription());
-//
-//            Rental updatedRental = rentalService.saveRental(existingRental); // Use saveRental for updates
-//            return ResponseEntity.ok(updatedRental);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
-
-
 }
-
-
