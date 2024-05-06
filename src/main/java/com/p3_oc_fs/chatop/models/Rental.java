@@ -1,6 +1,9 @@
 package com.p3_oc_fs.chatop.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -26,8 +29,12 @@ public class Rental {
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
 
+    @CreationTimestamp
+    @Temporal(TemporalType.DATE)
     private Date created_at;
 
+    @UpdateTimestamp
+    @Temporal(TemporalType.DATE)
     private Date updated_at;
 
     public Rental() {

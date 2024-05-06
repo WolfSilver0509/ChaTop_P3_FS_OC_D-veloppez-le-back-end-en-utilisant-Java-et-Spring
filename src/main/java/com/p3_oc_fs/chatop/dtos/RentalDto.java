@@ -21,7 +21,7 @@ public class RentalDto {
 
     private MultipartFile picture;
 
-    private Integer ownerId;
+//    private Integer ownerId;
 
 
     public RentalDto(BigDecimal price, String description, BigDecimal surface, String name) {

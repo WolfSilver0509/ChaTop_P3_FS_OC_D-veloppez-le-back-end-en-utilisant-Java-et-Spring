@@ -8,6 +8,7 @@ import com.p3_oc_fs.chatop.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,27 +26,23 @@ public class RentalController {
     @Autowired
     private UserService userService;
 
-    @PostMapping( "/1")
+    @PostMapping("/1")
     public ResponseEntity<Rental> createRental(@RequestParam("picture") MultipartFile picture,
-            @ModelAttribute RentalDto rentalDto,
-            Principal principal) {
-        Optional<User> ownerOptional = userService.findById(rentalDto.getOwnerId());
-        if (ownerOptional.isPresent()) {
-            User owner = ownerOptional.get();
-            Rental rental = new Rental(
-                    rentalDto.getName(),
-                    rentalDto.getSurface(),
-                    rentalDto.getPrice(),
-                    rentalDto.getDescription(),
-                    owner
-            );
+                                               @ModelAttribute RentalDto rentalDto,
+                                               Principal principal) {
+        User currentUser = (User) ((Authentication) principal).getPrincipal();
+        Rental rental = new Rental(
+                rentalDto.getName(),
+                rentalDto.getSurface(),
+                rentalDto.getPrice(),
+                rentalDto.getDescription(),
+                currentUser
+        );
 
-            rentalService.saveRentalWithImage(rental, picture);
-            return ResponseEntity.ok(rental);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        rentalService.saveRentalWithImage(rental, picture);
+        return ResponseEntity.ok(rental);
     }
+
 
     @PostMapping
     public String test(@ModelAttribute RentalDto string, Model model) {
