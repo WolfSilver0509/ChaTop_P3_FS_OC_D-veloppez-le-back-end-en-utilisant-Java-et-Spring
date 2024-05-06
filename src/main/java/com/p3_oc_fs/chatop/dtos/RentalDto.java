@@ -29,6 +29,7 @@ public class RentalDto {
 
     private Date updated_at;
 
+    private String pictureUrl;
 
 
 //    private Integer ownerId;
@@ -42,7 +43,7 @@ public class RentalDto {
 //    }
 
 
-    public RentalDto(Integer id, String name, BigDecimal surface, BigDecimal price, String description, Integer owner_id, Date created_at, Date updated_at) {
+    public RentalDto(Integer id, String name, BigDecimal surface, BigDecimal price, String description, Integer owner_id, Date created_at, Date updated_at, String pictureUrl) {
         this.id = id;
         this.name = name;
         this.surface = surface;
@@ -51,7 +52,12 @@ public class RentalDto {
         this.owner_id = owner_id;
         this.created_at = created_at;
         this.updated_at = updated_at;
+        this.pictureUrl = pictureUrl;
+
+
     }
+
+
 }
 
 

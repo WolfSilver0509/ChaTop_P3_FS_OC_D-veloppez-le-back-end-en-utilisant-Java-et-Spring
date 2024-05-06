@@ -21,7 +21,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("api/rentals")
+@RequestMapping("api")
 public class RentalController {
     @Autowired
     private RentalService rentalService;
@@ -29,7 +29,7 @@ public class RentalController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/1")
+    @PostMapping("/rentals")
     public ResponseEntity<Rental> createRental(@RequestParam("picture") MultipartFile picture,
                                                @ModelAttribute RentalDto rentalDto,
                                                Principal principal) {
@@ -78,7 +78,7 @@ public class RentalController {
 //
 //        );
 //    }
-    @GetMapping
+    @GetMapping("/rentals")
     public ResponseEntity<Map<String, List<RentalDto>>> getAllRentals() {
         List<Rental> rentals = rentalService.findAllRentals();
 
@@ -97,6 +97,7 @@ public class RentalController {
 
     // Méthode pour convertir un objet Rental en RentalDto
     private RentalDto convertToRentalDto(Rental rental) {
+//        String pictureUrl = rental.getPicture();
         return new RentalDto(
                 rental.getId(),
                 rental.getName(),
@@ -105,13 +106,15 @@ public class RentalController {
                 rental.getDescription(),
                 rental.getOwner_id().getId(),
                 rental.getCreated_at(),
-                rental.getUpdated_at()
+                rental.getUpdated_at(),
+                rental.getPicture()
+//                pictureUrl
 
         );
     }
 
 
-    @GetMapping("/{id}") // Use path variable for ID
+    @GetMapping("/rentals/{id}") // Use path variable for ID
     public ResponseEntity<Rental> getRentalById(@PathVariable Integer id) {
         Optional<Rental> rentalOptional = rentalService.findById(id);
         if (rentalOptional.isPresent()) {
@@ -121,9 +124,29 @@ public class RentalController {
         }
     }
 
-    @PostMapping
-    public String test(@ModelAttribute RentalDto string, Model model) {
-        return string.toString();
+    @PutMapping("/rentals/{id}")
+    public ResponseEntity<String> updateRental(@PathVariable Integer id,
+                                               @RequestBody RentalDto rentalDto,
+                                               Principal principal) {
+        Optional<Rental> existingRentalOptional = rentalService.findById(id);
+        if (existingRentalOptional.isPresent()) {
+            Rental existingRental = existingRentalOptional.get();
+            if (!existingRental.getOwner_id().getUsername().equals(principal.getName())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this rental.");
+            }
+
+            existingRental.setName(rentalDto.getName());
+            existingRental.setSurface(rentalDto.getSurface());
+            existingRental.setPrice(rentalDto.getPrice());
+            existingRental.setDescription(rentalDto.getDescription());
+
+            rentalService.saveRental(existingRental);
+
+            return ResponseEntity.ok("Rental updated successfully !");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rental not found.");
+        }
+
     }
 
 }
