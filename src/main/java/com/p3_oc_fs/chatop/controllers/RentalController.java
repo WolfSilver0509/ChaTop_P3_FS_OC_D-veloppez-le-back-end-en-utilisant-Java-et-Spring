@@ -27,7 +27,7 @@ public class RentalController {
     private UserService userService;
 
     @PostMapping("/1")
-    public ResponseEntity<Rental> createRental(@RequestParam("picture") MultipartFile picture,
+    public ResponseEntity<String> createRental(@RequestParam("picture") MultipartFile picture,
                                                @ModelAttribute RentalDto rentalDto,
                                                Principal principal) {
         User currentUser = (User) ((Authentication) principal).getPrincipal();
@@ -40,7 +40,7 @@ public class RentalController {
         );
 
         rentalService.saveRentalWithImage(rental, picture);
-        return ResponseEntity.ok(rental);
+        return ResponseEntity.ok("Rental created successfully !");
     }
 
     @GetMapping // Use GET for retrieving data
@@ -63,6 +63,51 @@ public class RentalController {
     public String test(@ModelAttribute RentalDto string, Model model) {
         return string.toString();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateRental(@PathVariable Integer id,
+                                               @ModelAttribute RentalDto rentalDto,
+                                               Principal principal) {
+        Optional<Rental> existingRentalOptional = rentalService.findById(id);
+        if (existingRentalOptional.isPresent()) {
+            Rental existingRental = existingRentalOptional.get();
+            if (!existingRental.getOwner().getUsername().equals(principal.getName())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this rental.");
+            }
+
+            existingRental.setName(rentalDto.getName());
+            existingRental.setSurface(rentalDto.getSurface());
+            existingRental.setPrice(rentalDto.getPrice());
+            existingRental.setDescription(rentalDto.getDescription());
+
+            rentalService.saveRental(existingRental);
+
+            return ResponseEntity.ok("Rental updated successfully !");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rental not found.");
+        }
+    }
+
+
+
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Rental> updateRental(@PathVariable Integer id,
+//                                               @ModelAttribute RentalDto rentalDto) {
+//        Optional<Rental> existingRentalOptional = rentalService.findById(id);
+//        if (existingRentalOptional.isPresent()) {
+//            Rental existingRental = existingRentalOptional.get();
+//            existingRental.setName(rentalDto.getName());
+//            existingRental.setSurface(rentalDto.getSurface());
+//            existingRental.setPrice(rentalDto.getPrice());
+//            existingRental.setDescription(rentalDto.getDescription());
+//
+//            Rental updatedRental = rentalService.saveRental(existingRental); // Use saveRental for updates
+//            return ResponseEntity.ok(updatedRental);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//    }
+
 
 }
 

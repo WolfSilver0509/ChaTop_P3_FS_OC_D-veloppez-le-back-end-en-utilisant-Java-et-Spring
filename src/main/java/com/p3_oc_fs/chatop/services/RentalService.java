@@ -54,6 +54,10 @@ public class RentalService {
         return rentalRepository.findById(id);
     }
 
+    public Rental saveRental(Rental rental) {
+        return rentalRepository.save(rental); // Save the updated rental object
+    }
+
 //    private String saveImage(MultipartFile image) {
 //        try {
 //            byte[] bytes = image.getBytes();
