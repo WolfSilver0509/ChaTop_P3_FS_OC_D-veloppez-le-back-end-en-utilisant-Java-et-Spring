@@ -1,5 +1,8 @@
 package com.p3_oc_fs.chatop.dtos;
 
+import com.p3_oc_fs.chatop.models.User;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +26,9 @@ public class RentalDtoGet {
 
     private String description;
 
+//    @ManyToOne
+//    @JoinColumn(name = "owner_id", nullable = false)
+//    private User owner_id;
     private Integer owner_id;
 
     private Date created_at;

@@ -80,6 +80,8 @@ public class RentalController {
         );
     }
 
+
+
     @GetMapping("/rentals/{id}")
     public ResponseEntity<RentalDtoGet> getRentalById(@PathVariable Integer id) {
         Optional<Rental> rentalOptional = rentalService.findById(id);
@@ -95,7 +97,7 @@ public class RentalController {
 
     @PutMapping("/rentals/{id}")
     public ResponseEntity<String> updateRental(@PathVariable Integer id,
-                                               @RequestBody RentalDtoGet rentalDtoGet,
+                                               @ModelAttribute RentalDtoGet rentalDtoGet,
                                                Principal principal) {
         Optional<Rental> existingRentalOptional = rentalService.findById(id);
         if (existingRentalOptional.isPresent()) {
