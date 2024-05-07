@@ -113,7 +113,7 @@ public class RentalController {
         );
     }
 
-//
+
 //    @GetMapping("/rentals/{id}") // Use path variable for ID
 //    public ResponseEntity<Rental> getRentalById(@PathVariable Integer id) {
 //        Optional<Rental> rentalOptional = rentalService.findById(id);
@@ -125,21 +125,34 @@ public class RentalController {
 //    }
 
     @GetMapping("/rentals/{id}")
-    public ResponseEntity<Map<String, RentalDto>> getRentalById(@PathVariable Integer id) {
+    public ResponseEntity<RentalDto> getRentalById(@PathVariable Integer id) {
         Optional<Rental> rentalOptional = rentalService.findById(id);
         if (rentalOptional.isPresent()) {
             Rental rental = rentalOptional.get();
             RentalDto rentalDto = convertToRentalDto(rental);
-
-            // Créer un objet Map pour envelopper les détails de la location dans la clé "rental"
-            Map<String, RentalDto> response = new HashMap<>();
-            response.put("rental", rentalDto);
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(rentalDto);
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+
+//    @GetMapping("/rentals/{id}")
+//    public ResponseEntity<Map<String, RentalDto>> getRentalById(@PathVariable Integer id) {
+//        Optional<Rental> rentalOptional = rentalService.findById(id);
+//        if (rentalOptional.isPresent()) {
+//            Rental rental = rentalOptional.get();
+//            RentalDto rentalDto = convertToRentalDto(rental);
+//
+//            // Créer un objet Map pour envelopper les détails de la location dans la clé "rental"
+//            Map<String, RentalDto> response = new HashMap<>();
+//            response.put("rental", rentalDto);
+//
+//            return ResponseEntity.ok(response);
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//    }
 
     @PutMapping("/rentals/{id}")
     public ResponseEntity<String> updateRental(@PathVariable Integer id,
