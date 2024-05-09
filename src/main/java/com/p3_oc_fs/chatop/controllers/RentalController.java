@@ -29,10 +29,29 @@ public class RentalController {
     @Autowired
     private UserService userService;
 
+//    @PostMapping("/rentals")
+//    public ResponseEntity<String> createRental(@RequestParam("picture") MultipartFile picture,
+//                                               @ModelAttribute RentalDtoCreate rentalDto,
+//                                               Principal principal) {
+//        User currentUser = (User) ((Authentication) principal).getPrincipal();
+//        Rental rental = new Rental(
+//                rentalDto.getName(),
+//                rentalDto.getSurface(),
+//                rentalDto.getPrice(),
+//                rentalDto.getDescription(),
+//                currentUser
+//        );
+//
+//        rentalService.saveRentalWithImage(rental, picture);
+////        return ResponseEntity.ok(rental);
+//        return ResponseEntity.status(HttpStatus.CREATED).body("Rental created !");
+//
+//    }
+
     @PostMapping("/rentals")
-    public ResponseEntity<Rental> createRental(@RequestParam("picture") MultipartFile picture,
-                                               @ModelAttribute RentalDtoCreate rentalDto,
-                                               Principal principal) {
+    public ResponseEntity<Map<String, String>> createRental(@RequestParam("picture") MultipartFile picture,
+                                                            @ModelAttribute RentalDtoCreate rentalDto,
+                                                            Principal principal) {
         User currentUser = (User) ((Authentication) principal).getPrincipal();
         Rental rental = new Rental(
                 rentalDto.getName(),
@@ -43,7 +62,11 @@ public class RentalController {
         );
 
         rentalService.saveRentalWithImage(rental, picture);
-        return ResponseEntity.ok(rental);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Rental created !");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/rentals")
@@ -95,15 +118,42 @@ public class RentalController {
     }
 
 
+//    @PutMapping("/rentals/{id}")
+//    public ResponseEntity<String> updateRental(@PathVariable Integer id,
+//                                               @ModelAttribute RentalDtoGet rentalDtoGet,
+//                                               Principal principal) {
+//        Optional<Rental> existingRentalOptional = rentalService.findById(id);
+//        if (existingRentalOptional.isPresent()) {
+//            Rental existingRental = existingRentalOptional.get();
+//            if (!existingRental.getOwner_id().getUsername().equals(principal.getName())) {
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this rental.");
+//            }
+//
+//            existingRental.setName(rentalDtoGet.getName());
+//            existingRental.setSurface(rentalDtoGet.getSurface());
+//            existingRental.setPrice(rentalDtoGet.getPrice());
+//            existingRental.setDescription(rentalDtoGet.getDescription());
+//
+//            rentalService.saveRental(existingRental);
+//
+//            return ResponseEntity.ok("Rental updated !");
+//        } else {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rental not found.");
+//        }
+//
+//    }
+
     @PutMapping("/rentals/{id}")
-    public ResponseEntity<String> updateRental(@PathVariable Integer id,
-                                               @ModelAttribute RentalDtoGet rentalDtoGet,
-                                               Principal principal) {
+    public ResponseEntity<Map<String, String>> updateRental(@PathVariable Integer id,
+                                                            @ModelAttribute RentalDtoGet rentalDtoGet,
+                                                            Principal principal) {
         Optional<Rental> existingRentalOptional = rentalService.findById(id);
         if (existingRentalOptional.isPresent()) {
             Rental existingRental = existingRentalOptional.get();
             if (!existingRental.getOwner_id().getUsername().equals(principal.getName())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this rental.");
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "You are not authorized to update this rental.");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }
 
             existingRental.setName(rentalDtoGet.getName());
@@ -113,11 +163,14 @@ public class RentalController {
 
             rentalService.saveRental(existingRental);
 
-            return ResponseEntity.ok("Rental updated successfully !");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Rental updated !");
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Rental not found.");
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Rental not found.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-
     }
 
 }
