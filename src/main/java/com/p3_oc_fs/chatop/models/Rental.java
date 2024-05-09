@@ -16,49 +16,44 @@ import java.util.Date;
 @Entity
 @Table(name = "rentals")
 public class Rental {
+
+    /* Identifiant de la location */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
 
+    /* Nom de la location */
     private String name;
 
+    /* Surface de la location */
     private BigDecimal surface;
 
+    /* Prix de la location */
     private BigDecimal price;
 
+    /* Chemin de l'image de la location */
     private String picture;
 
+    /* Description de la location */
     @Column(length = 2000)
     private String description;
 
+    /* Propriétaire de la location */
     @ManyToOne
     @JoinColumn(name = "owner_id", nullable = false)
     private User owner_id;
 
+    /* Date de création de la location */
     @CreationTimestamp
     @Temporal(TemporalType.DATE)
     private Date created_at;
 
+    /* Date de mise à jour de la location */
     @UpdateTimestamp
     @Temporal(TemporalType.DATE)
     private Date updated_at;
 
-//    public Rental() {
-//
-//    }
-
-//    public Rental(Integer id, String name, BigDecimal surface, BigDecimal price, String picture, String description, User owner_id, Date created_at, Date updated_at) {
-//        this.id = id;
-//        this.name = name;
-//        this.surface = surface;
-//        this.price = price;
-//        this.picture = picture;
-//        this.description = description;
-//        this.owner_id = owner_id;
-//        this.created_at = created_at;
-//        this.updated_at = updated_at;
-//    }
-
+    /* Constructeur */
     public Rental(String name, BigDecimal surface, BigDecimal price, String description, User owner_id) {
         this.name = name;
         this.surface = surface;
@@ -66,78 +61,4 @@ public class Rental {
         this.description = description;
         this.owner_id = owner_id;
     }
-
-//    // Getters and Setters
-//
-//    public Integer getId() {
-//        return id;
-//    }
-//
-//    public void setId(Integer id) {
-//        this.id = id;
-//    }
-//
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-//
-//    public BigDecimal getSurface() {
-//        return surface;
-//    }
-//
-//    public void setSurface(BigDecimal surface) {
-//        this.surface = surface;
-//    }
-//
-//    public BigDecimal getPrice() {
-//        return price;
-//    }
-//
-//    public void setPrice(BigDecimal price) {
-//        this.price = price;
-//    }
-//
-//    public String getPicture() {
-//        return picture;
-//    }
-//
-//    public void setPicture(String picture) {
-//        this.picture = picture;
-//    }
-//
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    public void setDescription(String description) {
-//        this.description = description;
-//    }
-//
-//    public User getOwner() {
-//        return owner_id;
-//    }
-//
-//    public void setOwner(User owner_id) {
-//        this.owner_id = owner_id;
-//    }
-//
-//    public Date getCreated_at() {
-//        return created_at;
-//    }
-//
-//    public void setCreated_at(Date created_at) {
-//        this.created_at = created_at;
-//    }
-//
-//    public Date getUpdated_at() {
-//        return updated_at;
-//    }
-//
-//    public void setUpdated_at(Date updated_at) {
-//        this.updated_at = updated_at;
-//    }
 }

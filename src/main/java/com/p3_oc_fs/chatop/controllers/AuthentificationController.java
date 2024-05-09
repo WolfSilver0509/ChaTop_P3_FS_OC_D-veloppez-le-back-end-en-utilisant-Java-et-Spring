@@ -1,10 +1,9 @@
 package com.p3_oc_fs.chatop.controllers;
 
 import com.p3_oc_fs.chatop.models.User;
-import com.p3_oc_fs.chatop.services.UserService;
+
 import com.p3_oc_fs.chatop.dtos.LoginUserDto;
 import com.p3_oc_fs.chatop.dtos.RegisterUserDto;
-import com.p3_oc_fs.chatop.responses.LoginResponse;
 import com.p3_oc_fs.chatop.services.AuthentificationService;
 import com.p3_oc_fs.chatop.services.JwtService;
 import org.springframework.http.ResponseEntity;
@@ -35,12 +34,6 @@ public class AuthentificationController {
      * @param registerUserDto Les informations d'inscription de l'utilisateur.
      * @return La réponse HTTP contenant les informations de l'utilisateur inscrit.
      */
-//    @PostMapping("/register")
-//    public ResponseEntity<User> register(@RequestBody RegisterUserDto registerUserDto) {
-//        User registeredUser = authenticationService.signup(registerUserDto);
-//
-//        return ResponseEntity.ok(registeredUser);
-//    }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, String>> register(@RequestBody RegisterUserDto registerUserDto) {
@@ -58,16 +51,7 @@ public class AuthentificationController {
      * @param loginUserDto Les informations de connexion de l'utilisateur.
      * @return La réponse HTTP contenant le token JWT d'authentification.
      */
-//    @PostMapping("/login")
-//    public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginUserDto loginUserDto) {
-//        User authenticatedUser = authenticationService.authenticate(loginUserDto);
-//
-//        String jwtToken = jwtService.generateToken(authenticatedUser);
-//
-//        LoginResponse loginResponse = new LoginResponse().setToken(jwtToken).setExpiresIn(jwtService.getExpirationTime());
-//
-//        return ResponseEntity.ok(loginResponse);
-//    }
+
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> authenticate(@RequestBody LoginUserDto loginUserDto) {
         User authenticatedUser = authenticationService.authenticate(loginUserDto);

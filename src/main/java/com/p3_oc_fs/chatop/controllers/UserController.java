@@ -3,7 +3,6 @@ package com.p3_oc_fs.chatop.controllers;
 import com.p3_oc_fs.chatop.dtos.UserGetMe;
 import com.p3_oc_fs.chatop.models.User;
 import com.p3_oc_fs.chatop.services.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;

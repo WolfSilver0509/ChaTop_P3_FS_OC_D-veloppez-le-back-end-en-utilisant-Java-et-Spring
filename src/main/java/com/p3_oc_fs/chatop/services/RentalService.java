@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,31 +23,27 @@ public class RentalService {
     @Autowired
     private RentalRepository rentalRepository;
 
-//    public void saveRentalWithImage(Rental rental, MultipartFile image) {
-//        String imageUrl = saveImage(image);
-//        rental.setPicture(imageUrl);
-//        rentalRepository.save(rental);
-//    }
-
     @Autowired
     private ResourceLoader resourceLoader;
 
+    /* Méthode pour enregistrer une location avec une image */
     public void saveRentalWithImage(Rental rental, MultipartFile image) {
         String imageUrl = saveImage(image, resourceLoader);
         rental.setPicture(imageUrl);
         rentalRepository.save(rental);
     }
 
+    /* Méthode pour sauvegarder une image */
     private String saveImage(MultipartFile image, ResourceLoader resourceLoader) {
         try {
             if (image.isEmpty()) {
-                throw new RuntimeException("Image file is empty");
+                throw new RuntimeException("Le fichier image est vide");
             }
 
             String imageName = image.getOriginalFilename();
             String contentType = image.getContentType();
             if (!contentType.startsWith("image/")) {
-                throw new RuntimeException("File is not an image");
+                throw new RuntimeException("Le fichier n'est pas une image");
             }
 
             Path path = resourceLoader.getResource("classpath:static/images/").getFile().toPath().resolve(imageName);
@@ -59,50 +54,22 @@ public class RentalService {
 
             return baseUrl + "/images/" + imageName;
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store image", e);
+            throw new RuntimeException("Échec de l'enregistrement de l'image", e);
         }
     }
 
-//    private String saveImage(MultipartFile image) {
-//        try {
-//            byte[] bytes = image.getBytes();
-//            String imageName = image.getOriginalFilename();
-//            String projectDir = System.getProperty("user.dir");
-//            Path path = Paths.get(projectDir, "/src/main/resources/static/images/", imageName);
-//            if (!Files.exists(path.getParent())) {
-//                Files.createDirectories(path.getParent());
-//            }
-//            Files.write(path, bytes);
-//            return baseUrl + "/images/" + imageName;
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to store image", e);
-//        }
-//    }
-
+    /* Méthode pour récupérer toutes les locations */
     public List<Rental> findAllRentals() {
         return rentalRepository.findAll();
     }
 
+    /* Méthode pour récupérer une location par son identifiant */
     public Optional<Rental> findById(Integer id) {
         return rentalRepository.findById(id);
     }
 
+    /* Méthode pour sauvegarder une location */
     public Rental saveRental(Rental rental) {
-        return rentalRepository.save(rental); // Save the updated rental object
+        return rentalRepository.save(rental); // Enregistre l'objet de location mis à jour
     }
-
-//    private String saveImage(MultipartFile image) {
-//        try {
-//            byte[] bytes = image.getBytes();
-//            String imageName = image.getOriginalFilename();
-//            Path path = Paths.get(".../.../.../resources/static/images/" + imageName);
-//            if (!Files.exists(path.getParent())) {
-//                Files.createDirectories(path.getParent());
-//            }
-//            Files.write(path, bytes);
-//            return "/images/" + imageName;
-//        } catch (IOException e) {
-//            throw new RuntimeException("Failed to store image", e);
-//        }
-//    }
 }
