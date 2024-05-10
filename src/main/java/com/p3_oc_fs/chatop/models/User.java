@@ -157,7 +157,7 @@ public class User implements UserDetails { // Définition de la classe User comm
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", fullName='" + name + '\'' +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", createdAt=" + createdAt +

@@ -6,15 +6,17 @@ import com.p3_oc_fs.chatop.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Contrôleur pour la gestion des utilisateurs.
  */
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @RestController
 public class UserController {
     private final UserService userService;
@@ -28,7 +30,7 @@ public class UserController {
      * @param user L'utilisateur actuellement authentifié.
      * @return Les informations de l'utilisateur actuellement authentifié.
      */
-    @GetMapping("/me")
+    @GetMapping("/auth/me")
     public UserGetMe getCurrentUser(@AuthenticationPrincipal User user) {
         return userService.getCurrentUser(user);
     }
@@ -43,4 +45,22 @@ public class UserController {
 
         return ResponseEntity.ok(users);
     }
+
+    /**
+     * Endpoint pour récupérer les informations d'un utilisateur spécifique par son ID.
+     * @param id L'ID de l'utilisateur.
+     * @return Les informations de l'utilisateur spécifié.
+     */
+    @GetMapping("/user/{id}")
+    public ResponseEntity<UserGetMe> getUserById(@PathVariable Integer id) {
+        Optional<User> userOptional = userService.findById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            UserGetMe userGetMe = userService.getCurrentUser(user);
+            return ResponseEntity.ok(userGetMe);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
