@@ -47,7 +47,7 @@ public class RentalController {
 
         // Réponse de réussite
         Map<String, String> response = new HashMap<>();
-        response.put("message", "Location créée !");
+        response.put("message", "Rental created !");
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -109,7 +109,7 @@ public class RentalController {
             // Vérifier si l'utilisateur est autorisé à mettre à jour cette location
             if (!existingRental.getOwner_id().getUsername().equals(principal.getName())) {
                 Map<String, String> response = new HashMap<>();
-                response.put("message", "Vous n'êtes pas autorisé à mettre à jour cette location.");
+                response.put("message", "You don't have permission to update this rental.");
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
             }
 
@@ -124,12 +124,12 @@ public class RentalController {
 
             // Réponse de réussite
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Location mise à jour !");
+            response.put("message", "Rental updated !");
             return ResponseEntity.ok(response);
         } else {
             // Location non trouvée
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Location non trouvée.");
+            response.put("message", "Rental not found.");
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
