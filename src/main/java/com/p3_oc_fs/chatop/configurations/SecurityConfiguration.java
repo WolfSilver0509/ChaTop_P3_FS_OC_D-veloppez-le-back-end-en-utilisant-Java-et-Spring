@@ -61,24 +61,5 @@ public class SecurityConfiguration {
         return http.build();
     }
 
-    /**
-     * Configuration de la source de configuration CORS (Cross-Origin Resource Sharing).
-     *
-     * @return La source de configuration CORS.
-     */
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        configuration.setAllowedOrigins(List.of("http://localhost:3001","http://localhost:4200"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-    }
 }
 
