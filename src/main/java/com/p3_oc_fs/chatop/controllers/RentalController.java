@@ -1,8 +1,11 @@
-/* Ce package contient les contrôleurs pour la gestion des locations */
+///* Ce package contient les contrôleurs pour la gestion des locations */
 package com.p3_oc_fs.chatop.controllers;
 
+import com.p3_oc_fs.chatop.dtos.CreateRentalResponseDto;
+import com.p3_oc_fs.chatop.dtos.GetAllRentalsResponseDto;
 import com.p3_oc_fs.chatop.dtos.RentalDtoCreate;
 import com.p3_oc_fs.chatop.dtos.RentalDtoGet;
+import com.p3_oc_fs.chatop.dtos.RentalDtoUpdate;
 import com.p3_oc_fs.chatop.models.Rental;
 import com.p3_oc_fs.chatop.models.User;
 import com.p3_oc_fs.chatop.services.RentalService;
@@ -14,9 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,11 +27,10 @@ public class RentalController {
     @Autowired
     private RentalService rentalService;
 
-    /* Créer une nouvelle location avec une image */
     @PostMapping("/rentals")
-    public ResponseEntity<Map<String, String>> createRental(@RequestParam("picture") MultipartFile picture,
-                                                            @ModelAttribute RentalDtoCreate rentalDto,
-                                                            Principal principal) {
+    public ResponseEntity<CreateRentalResponseDto> createRental(@RequestParam("picture") MultipartFile picture,
+                                                                @ModelAttribute RentalDtoCreate rentalDto,
+                                                                Principal principal) {
         // Obtenir l'utilisateur actuel
         User currentUser = (User) ((Authentication) principal).getPrincipal();
         // Créer une nouvelle location
@@ -46,15 +46,14 @@ public class RentalController {
         rentalService.saveRentalWithImage(rental, picture);
 
         // Réponse de réussite
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Rental created !");
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new CreateRentalResponseDto("Rental created!"));
     }
 
-    /* Obtenir toutes les locations */
+
+     /* Obtenir toutes les locations */
     @GetMapping("/rentals")
-    public ResponseEntity<Map<String, List<RentalDtoGet>>> getAllRentals() {
+    public ResponseEntity<GetAllRentalsResponseDto> getAllRentals() {
         // Récupérer toutes les locations
         List<Rental> rentals = rentalService.findAllRentals();
 
@@ -63,11 +62,8 @@ public class RentalController {
                 .map(this::convertToRentalDto)
                 .collect(Collectors.toList());
 
-        // Créer un objet Map pour envelopper les locations dans la clé "rentals"
-        Map<String, List<RentalDtoGet>> response = new HashMap<>();
-        response.put("rentals", rentalDtos);
-
-        return ResponseEntity.ok(response);
+        // Créer GetAllRentalsResponseDto et retourner
+        return ResponseEntity.ok(new GetAllRentalsResponseDto(rentalDtos));
     }
 
     // Méthode pour convertir un objet Rental en RentalDto
@@ -98,39 +94,38 @@ public class RentalController {
         }
     }
 
-    /* Mettre à jour une location */
-    @PutMapping("/rentals/{id}")
-    public ResponseEntity<Map<String, String>> updateRental(@PathVariable Integer id,
+
+//    /* Mettre à jour une location */
+@PutMapping("/rentals/{id}")
+public ResponseEntity<RentalDtoUpdate> updateRental(@PathVariable Integer id,
                                                             @ModelAttribute RentalDtoGet rentalDtoGet,
                                                             Principal principal) {
-        Optional<Rental> existingRentalOptional = rentalService.findById(id);
-        if (existingRentalOptional.isPresent()) {
-            Rental existingRental = existingRentalOptional.get();
-            // Vérifier si l'utilisateur est autorisé à mettre à jour cette location
-            if (!existingRental.getOwner_id().getUsername().equals(principal.getName())) {
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "You don't have permission to update this rental.");
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
-
-            // Mettre à jour les informations de la location
-            existingRental.setName(rentalDtoGet.getName());
-            existingRental.setSurface(rentalDtoGet.getSurface());
-            existingRental.setPrice(rentalDtoGet.getPrice());
-            existingRental.setDescription(rentalDtoGet.getDescription());
-
-            // Sauvegarder la location mise à jour
-            rentalService.saveRental(existingRental);
-
-            // Réponse de réussite
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Rental updated !");
-            return ResponseEntity.ok(response);
-        } else {
-            // Location non trouvée
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "Rental not found.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    Optional<Rental> existingRentalOptional = rentalService.findById(id);
+    if (existingRentalOptional.isPresent()) {
+        Rental existingRental = existingRentalOptional.get();
+        // Vérifier si l'utilisateur est autorisé à mettre à jour cette location
+        if (!existingRental.getOwner_id().getUsername().equals(principal.getName())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new RentalDtoUpdate("You don't have permission to update this rental."));
         }
+
+        // Mettre à jour les informations de la location
+        existingRental.setName(rentalDtoGet.getName());
+        existingRental.setSurface(rentalDtoGet.getSurface());
+        existingRental.setPrice(rentalDtoGet.getPrice());
+        existingRental.setDescription(rentalDtoGet.getDescription());
+
+        // Sauvegarder la location mise à jour
+        rentalService.saveRental(existingRental);
+
+        // Réponse de réussite
+        return ResponseEntity.ok(new RentalDtoUpdate("Rental updated!"));
+    } else {
+        // Location non trouvée
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new RentalDtoUpdate("Rental not found."));
     }
 }
+
+}
+
