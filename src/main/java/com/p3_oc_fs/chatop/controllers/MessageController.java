@@ -12,49 +12,52 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+    @RestController
+    @RequestMapping("api/messages")
+    public class MessageController {
 
-@RestController
-@RequestMapping("api/messages")
-public class MessageController {
+        @Autowired
+        private MessageRepository messageRepository;
 
-    @Autowired
-    private MessageRepository messageRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private RentalRepository rentalRepository;
 
-    @Autowired
-    private RentalRepository rentalRepository;
+        /**
+         * Endpoint pour créer un nouveau message.
+         *
+         * @param messageDTO L'objet de transfert de données contenant les détails du message.
+         *                   Champs requis : message, user_id, rental_id.
+         * @return ResponseEntity<MessageDto> Un objet MessageDto contenant les détails du message créé.
+         */
+        @PostMapping
+        public ResponseEntity<MessageDto> createMessage(@RequestBody MessageDto messageDTO) {
+            Message message = new Message();
+            message.setMessage(messageDTO.getMessage());
 
-    /**
-     * Endpoint pour créer un nouveau message.
-     *
-     * @param messageDTO L'objet de transfert de données contenant les détails du message.
-     *                   Champs requis : message, user_id, rental_id.
-     * @return ResponseEntity<Map<String, String>> Une réponse indiquant le succès ou l'échec.
-     */
-    @PostMapping
-    public ResponseEntity<Map<String, String>> createMessage(@RequestBody MessageDto messageDTO) {
-        Message message = new Message();
-        message.setMessage(messageDTO.getMessage());
+            // Récupère l'utilisateur par ID à partir de UserRepository
+            User user = userRepository.findById(messageDTO.getUser_id()).orElse(null);
+            message.setUser_id(user);
 
-        // Récupère l'utilisateur par ID à partir de UserRepository
-        User user = userRepository.findById(messageDTO.getUser_id()).orElse(null);
-        message.setUser_id(user);
+            // Récupère la location par ID à partir de RentalRepository
+            Rental rental = rentalRepository.findById(messageDTO.getRental_id()).orElse(null);
+            message.setRental_id(rental);
 
-        // Récupère la location par ID à partir de RentalRepository
-        Rental rental = rentalRepository.findById(messageDTO.getRental_id()).orElse(null);
-        message.setRental_id(rental);
+            // Enregistre le message dans MessageRepository
+            message = messageRepository.save(message);
 
-        // Enregistre le message dans MessageRepository
-        messageRepository.save(message);
+            // Convertit l'entité Message en MessageDto
+            MessageDto createdMessageDto = new MessageDto();
+            createdMessageDto.setId(message.getId());
+            createdMessageDto.setMessage(message.getMessage());
+            createdMessageDto.setUser_id(message.getUser_id().getId());
+            createdMessageDto.setRental_id(message.getRental_id().getId());
+            createdMessageDto.setCreated_at(message.getCreated_at());
+            createdMessageDto.setUpdated_at(message.getUpdated_at());
 
-        // Prépare la réponse
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "Message send with success");
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+            return new ResponseEntity<>(createdMessageDto, HttpStatus.CREATED);
+        }
     }
-}
+    
