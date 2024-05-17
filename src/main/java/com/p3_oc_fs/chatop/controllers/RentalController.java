@@ -1,131 +1,66 @@
 ///* Ce package contient les contrôleurs pour la gestion des locations */
-package com.p3_oc_fs.chatop.controllers;
+        package com.p3_oc_fs.chatop.controllers;
 
-import com.p3_oc_fs.chatop.dtos.CreateRentalResponseDto;
-import com.p3_oc_fs.chatop.dtos.GetAllRentalsResponseDto;
-import com.p3_oc_fs.chatop.dtos.RentalDtoCreate;
-import com.p3_oc_fs.chatop.dtos.RentalDtoGet;
-import com.p3_oc_fs.chatop.dtos.RentalDtoUpdate;
-import com.p3_oc_fs.chatop.models.Rental;
-import com.p3_oc_fs.chatop.models.User;
-import com.p3_oc_fs.chatop.services.RentalService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import com.p3_oc_fs.chatop.dtos.CreateRentalResponseDto; // Importation du DTO pour la réponse de création de location
+import com.p3_oc_fs.chatop.dtos.GetAllRentalsResponseDto; // Importation du DTO pour la réponse de récupération de toutes les locations
+import com.p3_oc_fs.chatop.dtos.RentalDtoCreate; // Importation du DTO pour la création de location
+import com.p3_oc_fs.chatop.dtos.RentalDtoGet; // Importation du DTO pour la récupération de location par ID
+import com.p3_oc_fs.chatop.dtos.RentalDtoUpdate; // Importation du DTO pour la mise à jour de location
+import com.p3_oc_fs.chatop.services.RentalService; // Importation du service des locations
+import org.springframework.beans.factory.annotation.Autowired; // Importation de l'annotation Autowired pour l'injection de dépendances
+import org.springframework.http.ResponseEntity; // Importation de la classe ResponseEntity pour les réponses HTTP
+import org.springframework.web.bind.annotation.*; // Importation des annotations pour les contrôleurs Spring
+import org.springframework.web.multipart.MultipartFile; // Importation de la classe MultipartFile pour la gestion des fichiers
 
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.security.Principal; // Importation de la classe Principal pour gérer les informations d'utilisateur
 
-@RestController
-@RequestMapping("api")
+@RestController // Indique que cette classe est un contrôleur REST
+@RequestMapping("api") // Indique le chemin de base pour les requêtes HTTP
 public class RentalController {
-    @Autowired
+
+    @Autowired // Injection de dépendance pour RentalService
     private RentalService rentalService;
 
+    /*
+     * Point de terminaison pour créer une nouvelle location.
+     * Prend en entrée un fichier image, un DTO de création de location, et les informations de l'utilisateur.
+     * Retourne une réponse contenant le DTO de la réponse de création de location.
+     */
     @PostMapping("/rentals")
     public ResponseEntity<CreateRentalResponseDto> createRental(@RequestParam("picture") MultipartFile picture,
                                                                 @ModelAttribute RentalDtoCreate rentalDto,
                                                                 Principal principal) {
-        // Obtenir l'utilisateur actuel
-        User currentUser = (User) ((Authentication) principal).getPrincipal();
-        // Créer une nouvelle location
-        Rental rental = new Rental(
-                rentalDto.getName(),
-                rentalDto.getSurface(),
-                rentalDto.getPrice(),
-                rentalDto.getDescription(),
-                currentUser
-        );
-
-        // Sauvegarder la location avec l'image
-        rentalService.saveRentalWithImage(rental, picture);
-
-        // Réponse de réussite
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new CreateRentalResponseDto("Rental created!"));
+        return rentalService.createRental(picture, rentalDto, principal);
     }
 
-
-     /* Obtenir toutes les locations */
+    /*
+     * Point de terminaison pour récupérer toutes les locations.
+     * Retourne une réponse contenant le DTO de la réponse de récupération de toutes les locations.
+     */
     @GetMapping("/rentals")
     public ResponseEntity<GetAllRentalsResponseDto> getAllRentals() {
-        // Récupérer toutes les locations
-        List<Rental> rentals = rentalService.findAllRentals();
-
-        // Convertir les locations en objets RentalDto
-        List<RentalDtoGet> rentalDtos = rentals.stream()
-                .map(this::convertToRentalDto)
-                .collect(Collectors.toList());
-
-        // Créer GetAllRentalsResponseDto et retourner
-        return ResponseEntity.ok(new GetAllRentalsResponseDto(rentalDtos));
+        return rentalService.getAllRentals();
     }
 
-    // Méthode pour convertir un objet Rental en RentalDto
-    private RentalDtoGet convertToRentalDto(Rental rental) {
-        return new RentalDtoGet(
-                rental.getId(),
-                rental.getName(),
-                rental.getSurface(),
-                rental.getPrice(),
-                rental.getDescription(),
-                rental.getOwner_id().getId(),
-                rental.getCreated_at(),
-                rental.getUpdated_at(),
-                rental.getPicture()
-        );
-    }
-
-    /* Obtenir une location par son ID */
+    /*
+     * Point de terminaison pour récupérer une location par son ID.
+     * Prend en entrée l'ID de la location.
+     * Retourne une réponse contenant le DTO de la location récupérée.
+     */
     @GetMapping("/rentals/{id}")
     public ResponseEntity<RentalDtoGet> getRentalById(@PathVariable Integer id) {
-        Optional<Rental> rentalOptional = rentalService.findById(id);
-        if (rentalOptional.isPresent()) {
-            Rental rental = rentalOptional.get();
-            RentalDtoGet rentalDto = convertToRentalDto(rental);
-            return ResponseEntity.ok(rentalDto);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        return rentalService.getRentalById(id);
     }
 
-
-//    /* Mettre à jour une location */
-@PutMapping("/rentals/{id}")
-public ResponseEntity<RentalDtoUpdate> updateRental(@PathVariable Integer id,
-                                                            @ModelAttribute RentalDtoGet rentalDtoGet,
-                                                            Principal principal) {
-    Optional<Rental> existingRentalOptional = rentalService.findById(id);
-    if (existingRentalOptional.isPresent()) {
-        Rental existingRental = existingRentalOptional.get();
-        // Vérifier si l'utilisateur est autorisé à mettre à jour cette location
-        if (!existingRental.getOwner_id().getUsername().equals(principal.getName())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new RentalDtoUpdate("You don't have permission to update this rental."));
-        }
-
-        // Mettre à jour les informations de la location
-        existingRental.setName(rentalDtoGet.getName());
-        existingRental.setSurface(rentalDtoGet.getSurface());
-        existingRental.setPrice(rentalDtoGet.getPrice());
-        existingRental.setDescription(rentalDtoGet.getDescription());
-
-        // Sauvegarder la location mise à jour
-        rentalService.saveRental(existingRental);
-
-        // Réponse de réussite
-        return ResponseEntity.ok(new RentalDtoUpdate("Rental updated!"));
-    } else {
-        // Location non trouvée
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new RentalDtoUpdate("Rental not found."));
+    /*
+     * Point de terminaison pour mettre à jour une location existante.
+     * Prend en entrée l'ID de la location, un DTO de la location à mettre à jour, et les informations de l'utilisateur.
+     * Retourne une réponse contenant le DTO de la location mise à jour.
+     */
+    @PutMapping("/rentals/{id}")
+    public ResponseEntity<RentalDtoUpdate> updateRental(@PathVariable Integer id,
+                                                        @ModelAttribute RentalDtoGet rentalDtoGet,
+                                                        Principal principal) {
+        return rentalService.updateRental(id, rentalDtoGet, principal);
     }
 }
-
-}
-
