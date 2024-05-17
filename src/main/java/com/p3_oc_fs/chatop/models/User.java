@@ -1,7 +1,15 @@
 package com.p3_oc_fs.chatop.models;
 
 /* Importation des annotations JPA pour la gestion des entités et des tables dans la base de données */
-import jakarta.persistence.*;
+
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority; // Importation de l'interface GrantedAuthority
