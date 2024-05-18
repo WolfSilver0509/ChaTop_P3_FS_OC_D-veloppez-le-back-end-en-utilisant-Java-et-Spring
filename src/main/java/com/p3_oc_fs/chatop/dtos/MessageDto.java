@@ -1,6 +1,5 @@
 package com.p3_oc_fs.chatop.dtos;
 
-import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
